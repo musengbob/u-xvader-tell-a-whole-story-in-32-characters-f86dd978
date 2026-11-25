@@ -6,6 +6,15 @@ import { dirname, join } from "node:path";
 // The story: a router, personified, has finally had enough of its owner.
 const STORY = "My router filed for divorce";
 
+// Build the entry line: the story itself, validated against the kit gate
+// (a single Wi-Fi network name of 1 to 32 characters, no trailing newline).
+function buildEntryLine(): string {
+  if (STORY.length < 1 || STORY.length > 32) {
+    throw new Error(`entry must be 1-32 characters, got ${STORY.length}`);
+  }
+  return STORY;
+}
+
 function resolveOutputPath(): string {
   const makefunDir = process.env.MAKEFUN_OUTPUT_DIR;
   if (makefunDir) return join(makefunDir, "entry.txt");
@@ -16,13 +25,11 @@ function resolveOutputPath(): string {
 }
 
 function main(): void {
-  if (STORY.length < 1 || STORY.length > 32) {
-    throw new Error(`entry must be 1-32 characters, got ${STORY.length}`);
-  }
+  const entry = buildEntryLine();
   const out = resolveOutputPath();
   mkdirSync(dirname(out), { recursive: true });
   // No trailing newline: the gate counts every character in the file.
-  writeFileSync(out, STORY, "utf8");
+  writeFileSync(out, entry, "utf8");
 }
 
 main();
